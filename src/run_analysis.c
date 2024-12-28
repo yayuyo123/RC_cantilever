@@ -1,51 +1,9 @@
-/****************************/
-/* コンクリート片持ち梁解析 */
-/****************************/
+#include <stdio.h>
+#include <math.h>
+#include "material.h"
 
-#include<stdio.h>
-#include<math.h>
 #define ROWS 1000
 
-//コンクリートの構成則
-double Con(double Ec, double stra){
-	double Ft = 3;
-	double Fc = -30;
-	double peak = -0.0025;
-	if(stra <= 0.0){
-		if(stra >= peak){
-			return -1.0 * Fc / pow(peak, 2) * pow((stra - peak), 2) + Fc;
-		}else{
-			double sig = -1.0 * Fc / (3.0 * peak) * stra + 4.0 * Fc / 3.0; 
-			if(sig < 0){
-				return sig;
-			}else{
-				return 0;
-			}
-		}
-	}else{
-		if(Ec * stra <= Ft){
-			return Ec * stra;
-		}else{
-			return 0;
-		}
-	}
-}
-
-//鉄筋の構成則
-double Ste(double Es, double stra){
-	double yield = 295;
-	double HR = 0.01;
-	double sig = Es * stra;
-	if(fabs(sig) <= yield){
-	return sig;
-	}else{
-		if(stra > 0){
-			return HR * Es * stra + yield * (1 - HR);
-		}else{
-			return HR * Es * stra + yield * (HR - 1);
-		}
-	}
-}
 
 //コンクリート断面の合力
 double sumC(int num, double xn, double d, double dA, double Ec, double phi){
@@ -93,6 +51,9 @@ double MomentC2(int num, double xn, double d, double b, double dA, double Ec, do
 	return F;
 }
 
+// 断面解析
+
+// 部材解析
 
 int main(void){
 	char line[256];
@@ -170,7 +131,7 @@ int main(void){
 	
 	fclose(fr);
 		
-	//断面解析
+	//断面解析 m-phi
 	double Section[ROWS][5] = {{0}};
 	double Convergent[ROWS][4] = {{0}};
 	double SUM, sum, M;
@@ -255,7 +216,7 @@ int main(void){
 	
 	
 	
-	//スパン全長計算
+	//スパン方向 荷重-変形
 	double StepDate[ROWS][3] = {{0}};
 	double FixMo = 1000000; //固定端モーメント
 	
